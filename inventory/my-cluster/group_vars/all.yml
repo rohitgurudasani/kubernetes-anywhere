@@ -1,0 +1,49 @@
+---
+k3s_version: v1.23.6+k3s1
+ansible_user: ubuntu
+systemd_dir: /etc/systemd/system
+
+# Set your timezone
+# system_timezone: "Your/Timezone"
+
+# interface which will be used for flannel
+flannel_iface: "eth0"
+
+# add Load Balancer Ip here
+apiserver_endpoint: "<lodbalancer ip address>"
+
+# k3s_token is required  masters can talk together securely
+# this token should be alpha numeric only
+k3s_token: "some-secret-password"
+
+
+k3s_node_ip: '{{ ansible_facts[flannel_iface]["ipv4"]["address"] }}'
+
+# Disable the taint manually by setting: k3s_master_taint = false
+k3s_master_taint: "{{ true if groups['node'] | default([]) | length >= 1 else false }}"
+
+# these arguments are recommended for servers as well as agents:
+extra_args: >-
+  --flannel-iface={{ flannel_iface }}
+  --node-ip={{ k3s_node_ip }}
+
+
+extra_server_args: >-
+  {{ extra_args }}
+  {{ '--node-taint CriticalAddonsOnly=true:NoSchedule' if k3s_master_taint else '' }}
+  --tls-san {{ apiserver_endpoint }}
+  --disable traefik
+  --write-kubeconfig-mode 644
+  --kube-apiserver-arg default-not-ready-toleration-seconds=30
+  --kube-apiserver-arg default-unreachable-toleration-seconds=30
+  --kube-controller-arg node-monitor-period=20s
+  --kube-controller-arg node-monitor-grace-period=20s
+  --kubelet-arg node-status-update-frequency=5s
+  --kube-controller-manager-arg bind-address=0.0.0.0
+  --kube-proxy-arg metrics-bind-address=0.0.0.0
+  --kube-scheduler-arg bind-address=0.0.0.0
+  --etcd-expose-metrics true 
+
+extra_agent_args: >-
+  {{ extra_args }}
+  --kubelet-arg node-status-update-frequency=5s

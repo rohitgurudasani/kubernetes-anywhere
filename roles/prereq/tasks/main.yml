@@ -1,0 +1,50 @@
+---
+# - name: Set same timezone on every Server
+#   timezone:
+#     name: "{{ system_timezone }}"
+#   when: (system_timezone is defined) and (system_timezone != "Your/Timezone")
+
+
+
+- name: Enable IPv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    state: present
+    reload: yes
+
+- name: Enable IPv6 forwarding
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "1"
+    state: present
+    reload: yes
+  when: ansible_all_ipv6_addresses
+
+- name: Update apt packages
+  become: true
+  apt:
+    update_cache: yes
+
+- name: Install jq
+  apt:
+    name: jq
+    state: present
+
+- name: Install nfs-common
+  apt:
+    name: nfs-common
+    state: present
+
+- name: Install open-iscsi
+  apt:
+    name: open-iscsi
+    state: present
+
+- name: Enable IPv6 router advertisements
+  sysctl:
+    name: net.ipv6.conf.all.accept_ra
+    value: "2"
+    state: present
+    reload: yes
+
