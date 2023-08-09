@@ -77,7 +77,7 @@ sudo ansible-playbook site.yml -i inventory/my-cluster/hosts.ini
 ### **Step 7 : Access kubernetes cluster by downloading config file :-**
 Get access to your Kubernetes cluster
 ```bash
-$ scp -i ./secret.pem ubuntu@{loadBalancerIp}:~/.kube/config ~/.kube/config
+$ scp -i ./secret.pem ubuntu@{master_node_ip}:~/.kube/config ~/.kube/config
 
 # Next edit server url in  ~/.kube/config file and point to loadBalancerIp eg: server: https://{loadBalancerIp}:6443)
 ```
@@ -99,5 +99,18 @@ To get longhorn ui (optional)
 ```bash
 # ui will be available on http://localhost:8080
 kubectl port-forward svc/longhorn-frontend 8080:80 -n longhorn-system
+```
+
+###  Remove k3s cluster
+
+```bash
+sudo ansible-playbook reset.yml -i inventory/my-cluster/hosts.ini
+```
+
+## **Troubleshooting**
+if you get a `113: No route to host` in loadbalancer logs, restart node by running below command
+```bash
+# ssh to specific node
+sudo reboot
 ```
 
