@@ -1,4 +1,4 @@
-# Kubernetes Anywhere
+# Deploy Kubernetes on Any Cloud Provider with K3s
 Automated Deployment of Lightweight HA Kubernetes on any cloud provider.
 
 Set up Kubernetes clusters on any major cloud service provider. Leveraging the efficiency of k3s, the flexibility of Ansible automation, and the reliability of Longhorn distributed block storage, this repository offers a unified and lightweight Kubernetes environment.
